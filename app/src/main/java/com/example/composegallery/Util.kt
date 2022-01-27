@@ -1,7 +1,12 @@
 package com.example.composegallery
 
+import android.os.Build
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
+
+// ============================================================
+// ==================== SnapshotStateLists ====================
+// ============================================================
 
 fun <T> SnapshotStateList<T>.swapList(newList: List<T>) {
     clear()
@@ -35,4 +40,15 @@ fun snapshotStateListToList(snapshotStateList: SnapshotStateList<String>): List<
         list += it
     }
     return list
+}
+
+
+// =============================================
+// ==================== API ====================
+// =============================================
+
+inline fun <T> sdk29AndUp(onSdk29: () -> T): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        onSdk29()
+    } else null
 }
