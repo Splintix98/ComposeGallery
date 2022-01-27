@@ -2,7 +2,6 @@ package com.example.composegallery
 
 import android.Manifest
 import android.content.ContentUris
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
@@ -11,7 +10,6 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,8 +18,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -29,10 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.composegallery.storage.ExternalStoragePhoto
-import com.example.composegallery.ui.theme.ComposeGalleryTheme
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -111,47 +107,6 @@ class MainActivity : ComponentActivity() {
             }
         }*/
         setContent {
-            // YT-Playlist: https://www.youtube.com/watch?v=rHKeRWK3zL4&list=PLQkwcJG4YTCSpJ2NLhDTHhi6XBNfk9WiC&index=2
-
-            /*
-            // Part 4: ImageCard
-            ImageCard(
-                painter = painterResource(id = R.drawable.cbr650f_1),
-                title = "Honda CBR650F",
-                contentDescription = "CBR in the woods"
-            )
-
-            // Part 5: Text Formatting
-            FormattedText(fontFamilyDongle)
-
-            // Part 6: (External) State
-            ExternalStateColorBoxes()
-
-            // Part 7: Textfields, Buttons & Snackbars
-            TextfieldButtonSnackbar()
-
-            // Part 8: Lists
-            ListsLazyColum()
-            ListsColumn()
-
-            // Part 9: Constraint Layout
-            ConstraintLayoutFunc()
-
-            // Part 10: Side Effects & Effect Handlers
-            MyComposable(backPressedDispatcher = )
-            SideEffectsAndHandlers()
-            SideEffectsAndHandlers2()
-
-            // Part 11: Simple Animations
-            SimpleAnimations()
-
-            // Video: Jetpack Compose Navigation for Beginners
-            Navigation()
-
-            // Video: Compose Navigation Just Got So Much Easier
-            EasierNavigationDemo().Main()
-            */
-
             // Video: How to Use Internal Storage (Save, Load, Delete) - Android Studio Tutorial
             val context = LocalContext.current
             val bitmap = remember {
@@ -159,14 +114,6 @@ class MainActivity : ComponentActivity() {
             }
 
             Column {
-//                var internalPhotosList: List<InternalStoragePhoto> by remember { mutableStateOf(listOf()) }
-//                internalPhotosList = internalPhotos
-//
-//                var externalPhotosList: List<SharedStoragePhoto> by remember {
-//                    mutableStateOf(listOf())
-//                }
-//                externalPhotosList = externalPhotos
-
                 Row(horizontalArrangement = Arrangement.SpaceEvenly) {
                     Button(onClick = {
 //                        takePhotoToInternal.launch()
