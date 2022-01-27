@@ -2,14 +2,13 @@ package com.example.composegallery
 
 import android.Manifest
 import android.content.ContentUris
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,15 +19,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import com.example.composegallery.storage.ExternalStoragePhoto
+import com.example.composegallery.ui.theme.ComposeGalleryTheme
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -43,12 +43,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val takePhotoToExternal =
-            registerForActivityResult(ActivityResultContracts.TakePicturePreview()) {
-                if (it != null) {
-                    loadPhotosFromExternalStorageIntoVariable()
+        setContent {
+            ComposeGalleryTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    MyApp()
                 }
             }
+        }
+    }
+
+
+    /*override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         permissionsLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -72,7 +82,7 @@ class MainActivity : ComponentActivity() {
         loadPhotosFromExternalStorageIntoVariable()
 
 
-        /*setContent {
+        setContent {
             ComposeGalleryTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -82,8 +92,7 @@ class MainActivity : ComponentActivity() {
                     // MyApp()
                     Column {
                         Button(onClick = {
-                            // loadPhotosFromExternalStorageIntoVariable(context, photos)
-                            takePhotoToExternal.launch()
+                             loadPhotosFromExternalStorageIntoVariable()
                         }) {
                             Text(text = "Get Photos")
                         }
@@ -104,75 +113,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-            }
-        }*/
-        setContent {
-            // Video: How to Use Internal Storage (Save, Load, Delete) - Android Studio Tutorial
-            val context = LocalContext.current
-            val bitmap = remember {
-                mutableStateOf<Bitmap?>(null)
-            }
-
-            Column {
-                Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                    Button(onClick = {
-//                        takePhotoToInternal.launch()
-//                        internalPhotosList = internalPhotos
-                    }) {
-                        Text(text = "Photo Internal Storage")
-                    }
-
-                    Button(onClick = {
-                        takePhotoToExternal.launch()
-//                        externalPhotosList = externalPhotos
-                    }) {
-                        Text(text = "Photo External Storage")
-                    }
-                }
-
-                LazyColumn {
-                    items(items = externalPhotosMutable) {
-                        Card(
-                            modifier = Modifier
-                                .width(300.dp)
-                        ) {
-                            Log.d("photo: ", "$it")
-                            Text(text = "Image: ${it.name}")
-
-                            GlideImage(
-                                imageModel = it.contentUri,
-                                contentScale = ContentScale.Fit,
-//                                placeHolder = ImageBitmap.imageResource(R.drawable.cbr650f_1)
-                            )
-
-
-                            // ============================================================
-                            // ============== works but very bad performance ==============
-                            // ============================================================
-                            /*it.contentUri?.let {
-                                if (Build.VERSION.SDK_INT < 28) {
-                                    bitmap.value = MediaStore.Images
-                                        .Media.getBitmap(context.contentResolver, it)
-
-                                } else {
-                                    val source = ImageDecoder
-                                        .createSource(context.contentResolver, it)
-                                    bitmap.value = ImageDecoder.decodeBitmap(source)
-                                }
-
-                                bitmap.value?.let { btm ->
-                                    Image(
-                                        bitmap = btm.asImageBitmap(),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(400.dp)
-                                    )
-                                }
-                            }*/
-                        }
-                    }
-                }
-
-
             }
         }
     }
@@ -276,11 +216,11 @@ class MainActivity : ComponentActivity() {
 //                .show()
 //        } else Toast.makeText(this, "Can't show photos -> no rights", Toast.LENGTH_SHORT)
 //            .show()
-    }
+    }*/
 }
 
 
-/*@Composable
+@Composable
 fun MyApp() {
     val context = LocalContext.current
     val permissionsList = remember { mutableStateListOf<String>() }
@@ -288,6 +228,73 @@ fun MyApp() {
     val photos = remember { mutableStateListOf<ExternalStoragePhoto>() }
 
 
+    // loadPhotosFromExternalStorageIntoVariable(context, photos)
+
+
+    Scaffold() {
+        Column {
+            PermissionButton(
+                permissionsList = permissionsList,
+                permissionsNeeded = permissionsNeeded,
+                context = context,
+                photos = photos,
+            )
+
+            RefreshPhotosButton(context = context, photos = photos)
+
+            Text(text = "Permissions granted: ${listToString(permissionsList)}")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyColumn {
+                items(items = photos) {
+                    Card(
+                        modifier = Modifier
+                            .width(300.dp)
+                    ) {
+                        Text(text = "Image: ${it.name}")
+
+                        GlideImage(
+                            imageModel = it.contentUri,
+                            contentScale = ContentScale.Fit,
+//                                placeHolder = ImageBitmap.imageResource(R.drawable.cbr650f_1)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun RefreshPhotosButton(
+    context: Context,
+    photos: SnapshotStateList<ExternalStoragePhoto>
+) {
+    val takePhotoToExternal =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
+            if (it != null) {
+                loadPhotosFromExternalStorageIntoVariable(context, photos)
+            }
+        }
+
+    Button(onClick = {
+        takePhotoToExternal.launch()
+        loadPhotosFromExternalStorageIntoVariable(context, photos)
+    }) {
+        Text(text = "Take Photo and refresh")
+    }
+}
+
+
+@Composable
+fun PermissionButton(
+    permissionsList: SnapshotStateList<String>,
+    permissionsNeeded: MutableList<String>,
+    context: Context,
+    photos: SnapshotStateList<ExternalStoragePhoto>
+) {
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { resultPermissions ->
@@ -300,56 +307,31 @@ fun MyApp() {
         }
     }
 
-    val takePhotoToExternal =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
-            if (it != null) {
-                loadPhotosFromExternalStorageIntoVariable(context, photos)
-            }
-        }
-
-    Scaffold() {
-        Column {
-            Button(onClick = {
-                permissionLauncher.launch(permissionsNeeded.toTypedArray())
-            }) {
-                Text(text = "Get Permissions")
-            }
-
-            Button(onClick = {
-//                loadPhotosFromExternalStorageIntoVariable(context, photos)
-                takePhotoToExternal.launch()
-            }) {
-                Text(text = "Get Photos")
-            }
-
-            Text(text = "Permissions granted: ${listToString(permissionsList)}")
-
-            LazyColumn {
-                items(items = photos) { photo ->
-                    Card {
-                        Text(text = "Placeholder for an image.")
-                    }
-                }
-            }
-        }
+    Button(onClick = {
+        permissionLauncher.launch(permissionsNeeded.toTypedArray())
+        loadPhotosFromExternalStorageIntoVariable(context, photos)
+    }) {
+        Text(text = "Get Permissions")
     }
 }
+
 
 private fun loadPhotosFromExternalStorageIntoVariable(
     context: Context,
-    photosList: SnapshotStateList<ExternalStoragePhoto>
+    photos: SnapshotStateList<ExternalStoragePhoto>
 ) {
+//    val lifecycleScope = LifecycleOwner().lifecycleScope
+//    lifecycleScope.launch {
     GlobalScope.launch {
-        val photosTemp = loadPhotosFromExternalStorage(context, photosList)
-        photosList.addAll(photosTemp)
-        Log.d("externalPhotos", "${photosList.size}")
-        // externalPhotosMutable.value = externalPhotosMutable +
+        val photosTemp = loadPhotosFromExternalStorage(context)
+        photos.addAll(photosTemp)
+        Log.d("externalPhotos", "${photos.size}")
     }
 }
 
+
 private suspend fun loadPhotosFromExternalStorage(
-    context: Context,
-    photosList: SnapshotStateList<ExternalStoragePhoto>
+    context: Context
 ): List<ExternalStoragePhoto> {
     return withContext(Dispatchers.IO) {
         val collection = sdk29AndUp {
@@ -396,9 +378,42 @@ private suspend fun loadPhotosFromExternalStorage(
         } ?: listOf()
     }
 }
-*/
+
+
 inline fun <T> sdk29AndUp(onSdk29: () -> T): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         onSdk29()
     } else null
 }
+
+
+/*@Composable
+fun <I, O> registerForActivityResult(
+    contract: ActivityResultContract<I, O>,
+    onResult: (O) -> Unit
+): ActivityResultLauncher<I> {
+    // First, find the ActivityResultRegistry by casting the Context
+    // (which is actually a ComponentActivity) to ActivityResultRegistryOwner
+    val owner = LocalContext.current as ActivityResultRegistryOwner
+    val activityResultRegistry = owner.activityResultRegistry
+
+    // Tracking current onResult listener
+    val currentOnResult = rememberUpdatedState(onResult)
+
+    // Only need to be unique and consistent across configuration changes.
+    val key = remember { UUID.randomUUID().toString() }
+
+    val realLauncher = remember<ActivityResultLauncher<I>> {
+        activityResultRegistry.register(key, contract) {
+            currentOnResult.value(it)
+        }
+    }
+
+    DisposableEffect(activityResultRegistry, key, contract) {
+        onDispose {
+            realLauncher.unregister()
+        }
+    }
+
+    return realLauncher
+}*/
