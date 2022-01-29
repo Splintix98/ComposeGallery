@@ -1,36 +1,16 @@
 package com.example.composegallery
 
-import android.Manifest
-import android.content.ContentUris
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import com.example.composegallery.storage.ExternalStoragePhoto
 import com.example.composegallery.ui.theme.ComposeGalleryTheme
-import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MyApp()
+                    NavigationMain()
                 }
             }
         }
@@ -51,8 +31,11 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@Destination(start = true)
 @Composable
-fun MyApp() {
+fun MyApp(
+    navigator: DestinationsNavigator
+) {
     val context = LocalContext.current
     val permissionsList = remember { mutableStateListOf<String>() }
     val permissionsNeeded = getNeededPermissions(context)
@@ -60,7 +43,8 @@ fun MyApp() {
     Gallery(
         permissionsList = permissionsList,
         permissionsNeeded = permissionsNeeded,
-        context = context
+        context = context,
+        navigator = navigator,
     )
 }
 

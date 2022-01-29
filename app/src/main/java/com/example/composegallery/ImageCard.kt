@@ -24,6 +24,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.composegallery.destinations.ImageDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -32,7 +34,8 @@ fun ImageCard(
     bitmap: Bitmap,
     title: String,
     contentDescription: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigator: DestinationsNavigator
 ) {
     Box(
         modifier = Modifier
@@ -49,6 +52,7 @@ fun ImageCard(
                     Toast
                         .makeText(context, title, Toast.LENGTH_SHORT)
                         .show()
+                    navigator.navigate(ImageDestination)
                 }
         ) {
             Box(
