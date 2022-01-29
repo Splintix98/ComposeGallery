@@ -2,6 +2,9 @@ package com.example.composegallery
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Parcelable
+import android.util.Size
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,15 +28,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.composegallery.destinations.ImageDestination
+import com.example.composegallery.storage.ExternalStoragePhoto
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class Photo(
+    val id: Long,
+    val name: String,
+    val width: Int,
+    val height: Int,
+    val contentUri: Uri,
+) : Parcelable
 
 @Composable
 fun ImageCard(
     context: Context,
-    bitmap: Bitmap,
-    title: String,
-    contentDescription: String,
+    photo: ExternalStoragePhoto,
     modifier: Modifier = Modifier,
     navigator: DestinationsNavigator
 ) {
@@ -50,9 +62,19 @@ fun ImageCard(
                 .fillMaxWidth()
                 .clickable {
                     Toast
-                        .makeText(context, title, Toast.LENGTH_SHORT)
+                        .makeText(context, photo.name, Toast.LENGTH_SHORT)
                         .show()
-                    navigator.navigate(ImageDestination)
+                    navigator.navigate(
+                        ImageDestination(
+                            Photo(
+                                contentUri = photo.contentUri,
+                                height = photo.height,
+                                width = photo.width,
+                                id = photo.id,
+                                name = photo.name,
+                            )
+                        )
+                    )
                 }
         ) {
             Box(
@@ -67,8 +89,8 @@ fun ImageCard(
                 GlideImage(
 //                                imageModel = it.contentUri,
                     imageModel = Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = contentDescription
+                        bitmap = getBitmapFromUri(context, photo.contentUri).asImageBitmap(),
+                        contentDescription = photo.name
                     ),
                     loading = {
                         ConstraintLayout(
@@ -107,9 +129,19 @@ fun ImageCard(
                         .padding(12.dp),
                     contentAlignment = Alignment.BottomStart
                 ) {
-                    Text(text = title, style = TextStyle(color = Color.White, fontSize = 16.sp))
+                    Text(
+                        text = photo.name,
+                        style = TextStyle(color = Color.White, fontSize = 16.sp)
+                    )
                 }
             }
         }
     }
+}
+
+fun getBitmapFromUri(
+    context: Context,
+    uri: Uri
+): Bitmap {
+    return context.contentResolver.loadThumbnail(uri, Size(300, 300), null)
 }

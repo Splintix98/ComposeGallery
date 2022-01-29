@@ -49,16 +49,10 @@ fun Gallery(
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn {
-                items(items = photos) {
-                    val mContentResolver = context.contentResolver
-                    val thumbnail: Bitmap =
-                        mContentResolver.loadThumbnail(it.contentUri, Size(300, 300), null)
-
+                items(items = photos) { photo ->
                     ImageCard(
                         context = context,
-                        bitmap = thumbnail,
-                        title = it.name,
-                        contentDescription = it.name,
+                        photo = photo,
                         navigator = navigator
                     )
                 }
