@@ -1,14 +1,20 @@
 package com.example.composegallery
 
+import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.Navigation
 import com.example.composegallery.ui.theme.ComposeGalleryTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -16,7 +22,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContent {
+        /*setContent {
             ComposeGalleryTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -26,8 +32,38 @@ class MainActivity : ComponentActivity() {
                     NavigationMain()
                 }
             }
+        }*/
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val neededPermissions = getNeededPermissions(this)
+
+        if(neededPermissions.isEmpty()) {
+            setContent {
+                // get Photos
+
+                // Navigate to Gallery
+                NavigationMain()
+            }
+        }
+        // not all permissions are still available
+        else {
+            setContent{
+                val context = LocalContext.current
+                val intent = Intent(context, PermissionActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                context.startActivity(intent)
+            }
         }
     }
+}
+
+
+@Composable
+fun NavigationMain() {
+    DestinationsNavHost(navGraph = NavGraphs.root)
 }
 
 

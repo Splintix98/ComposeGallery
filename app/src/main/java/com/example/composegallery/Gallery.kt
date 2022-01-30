@@ -35,12 +35,12 @@ fun Gallery(
 
     Scaffold() {
         Column {
-            PermissionButton(
+            /*PermissionButton(
                 permissionsList = permissionsList,
                 permissionsNeeded = permissionsNeeded,
                 context = context,
                 photos = photos,
-            )
+            )*/
 
             RefreshPhotosButton(context = context, photos = photos)
 

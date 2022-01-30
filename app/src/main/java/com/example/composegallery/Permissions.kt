@@ -19,12 +19,12 @@ fun getNeededPermissions(context: Context): MutableList<String> {
 
     // checking for write permissions
     // not neccessary on API 29 and above
-    val hasWritePermission = ContextCompat.checkSelfPermission(
+    val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    val hasWritePermission = (ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
-    ) == PackageManager.PERMISSION_GRANTED
-    val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-    if (hasWritePermission || minSdk29) permissionsOwned.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    ) == PackageManager.PERMISSION_GRANTED || minSdk29)
+    if (hasWritePermission) permissionsOwned.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
 
     val permissionsToRequest = mutableListOf<String>()
@@ -37,3 +37,5 @@ fun getNeededPermissions(context: Context): MutableList<String> {
 
     return permissionsToRequest
 }
+
+
