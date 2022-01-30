@@ -75,6 +75,16 @@ fun MyApp(
     navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
+
+    GalleryGrid(
+        context = context,
+        navigator = navigator
+    )
+
+
+
+    /* old Navigator
+    val context = LocalContext.current
     val permissionsList = remember { mutableStateListOf<String>() }
     val permissionsNeeded = getNeededPermissions(context)
 
@@ -83,7 +93,7 @@ fun MyApp(
         permissionsNeeded = permissionsNeeded,
         context = context,
         navigator = navigator,
-    )
+    )*/
 }
 
 
