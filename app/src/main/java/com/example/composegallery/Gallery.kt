@@ -1,7 +1,6 @@
 package com.example.composegallery
 
 import android.content.Context
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -21,7 +20,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.composegallery.destinations.ImageDestination
 import com.example.composegallery.storage.ExternalStoragePhoto
 import com.example.composegallery.storage.StorageUtils
-import com.google.accompanist.coil.rememberCoilPainter
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.skydoves.landscapist.glide.GlideImage
@@ -70,7 +68,9 @@ fun ImagesGrid(
     navigator: DestinationsNavigator,
     context: Context
 ) {
-    LazyVerticalGrid(cells = GridCells.Adaptive(minSize = 120.dp)) {
+    LazyVerticalGrid(
+        cells = GridCells.Adaptive(minSize = 120.dp)
+    ) {
         items(photos) { photo ->
             Box(
                 modifier = Modifier
@@ -79,21 +79,17 @@ fun ImagesGrid(
                             .makeText(context, photo.contentUri.toString(), Toast.LENGTH_SHORT)
                             .show()
                         navigator.navigate(
-                            ImageDestination(
-                                Photo(
-                                    contentUri = photo.contentUri,
-                                    height = photo.height,
-                                    width = photo.width,
-                                    id = photo.id,
-                                    name = photo.name,
-                                )
-                            )
+                            ImageDestination(photo)
                         )
                     }
             ) {
-                GlideImage(
+                ImageCard(context = context, photo = photo, navigator = navigator)
+            /*GlideImage(
                     imageModel = Image(
-                        bitmap = getBitmapFromUri(context, photo.contentUri).asImageBitmap(),
+                        bitmap = getThumbnailBitmapFromUri(
+                            context,
+                            photo.contentUri
+                        ).asImageBitmap(),
                         contentDescription = ""
                     ),
                     loading = {
@@ -112,7 +108,7 @@ fun ImagesGrid(
                         }
                     },
                     contentScale = ContentScale.FillWidth
-                )
+                )*/
             }
         }
     }

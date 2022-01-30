@@ -17,7 +17,7 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun Image(
     navigator: DestinationsNavigator,
-    photo: Photo
+    photo: ExternalStoragePhoto
 ) {
     GlideImage(
         imageModel = photo.contentUri,

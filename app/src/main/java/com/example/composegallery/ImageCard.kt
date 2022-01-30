@@ -15,32 +15,27 @@ import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.LocalImageLoader
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.example.composegallery.destinations.ImageDestination
 import com.example.composegallery.storage.ExternalStoragePhoto
+import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.imageloading.LoadPainterDefaults
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
-data class Photo(
-    val id: Long,
-    val name: String,
-    val width: Int,
-    val height: Int,
-    val contentUri: Uri,
-) : Parcelable
 
 @Composable
 fun ImageCard(
@@ -51,97 +46,73 @@ fun ImageCard(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxWidth(0.5f)
-            .padding(16.dp)
+            .padding(1.dp)
+            .width(((getScreenDimensionsInDp(context).x / 3) - 2).dp)
+            .height(((getScreenDimensionsInDp(context).x / 3) - 2).dp)
     ) {
-
         Card(
-            shape = RoundedCornerShape(15.dp),
+            shape = RoundedCornerShape(5.dp),
             elevation = 5.dp,
             modifier = modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .clickable {
-                    Toast
-                        .makeText(context, photo.name, Toast.LENGTH_SHORT)
-                        .show()
+                    // Toast.makeText(context, photo.name, Toast.LENGTH_SHORT).show()
                     navigator.navigate(
-                        ImageDestination(
-                            Photo(
-                                contentUri = photo.contentUri,
-                                height = photo.height,
-                                width = photo.width,
-                                id = photo.id,
-                                name = photo.name,
-                            )
-                        )
+                        ImageDestination(photo)
                     )
                 }
         ) {
-            Box(
+            Image(
+                painter = rememberImagePainter(
+                    data = photo.contentUri,
+                    imageLoader = LocalImageLoader.current,
+                    builder = {
+                        if (false == true) this.crossfade(LoadPainterDefaults.FadeInTransitionDuration)
+                        placeholder(0)
+                    }
+                ),
+                contentDescription = "",
                 modifier = Modifier
-                    .height(200.dp)
-            ) {
-                /*Image(
-                    bitmap = bitmap.asImageBitmap(),
-                    contentDescription = contentDescription,
-                    contentScale = ContentScale.Crop
-                )*/
-                GlideImage(
-//                                imageModel = it.contentUri,
-                    imageModel = Image(
-                        bitmap = getBitmapFromUri(context, photo.contentUri).asImageBitmap(),
-                        contentDescription = photo.name
-                    ),
-                    loading = {
-                        ConstraintLayout(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            val indicator = createRef()
-                            CircularProgressIndicator(
-                                modifier = Modifier.constrainAs(indicator) {
-                                    top.linkTo(parent.top)
-                                    bottom.linkTo(parent.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                }
-                            )
-                        }
-                    },
-                    contentScale = ContentScale.FillHeight,
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black
-                                ),
-                                startY = 300f
-                            )
+                    .fillMaxSize()
+                    .padding(1.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Crop
+            )
+            /*GlideImage(
+                contentScale = ContentScale.Crop,
+                imageModel = Image(
+                    bitmap = getThumbnailBitmapFromUri(
+                        context,
+                        photo.contentUri
+                    ).asImageBitmap(),
+                    contentDescription = photo.name
+                ),
+                loading = {
+                    ConstraintLayout(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        val indicator = createRef()
+                        CircularProgressIndicator(
+                            modifier = Modifier.constrainAs(indicator) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
                         )
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(12.dp),
-                    contentAlignment = Alignment.BottomStart
-                ) {
-                    Text(
-                        text = photo.name,
-                        style = TextStyle(color = Color.White, fontSize = 16.sp)
-                    )
-                }
-            }
+                    }
+                },
+
+            )*/
         }
     }
 }
 
-fun getBitmapFromUri(
+
+/*
+fun getThumbnailBitmapFromUri(
     context: Context,
     uri: Uri
 ): Bitmap {
-    return context.contentResolver.loadThumbnail(uri, Size(300, 300), null)
-}
+    return context.contentResolver.loadThumbnail(uri, Size(200, 200), null)
+}*/
