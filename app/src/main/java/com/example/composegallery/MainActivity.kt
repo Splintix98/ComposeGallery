@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.Navigation
 import com.example.composegallery.storage.StorageUtils.Companion.fetchImageUris
+import com.example.composegallery.storage.StorageUtils.Companion.fetchPhotos
 import com.example.composegallery.ui.theme.ComposeGalleryTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.annotation.Destination
@@ -44,7 +45,8 @@ class MainActivity : ComponentActivity() {
         if(neededPermissions.isEmpty()) {
             setContent {
                 // get Photos
-                fetchImageUris(this)
+                // fetchImageUris(this)
+                fetchPhotos(this)
 
                 // Navigate to Gallery
                 NavigationMain()

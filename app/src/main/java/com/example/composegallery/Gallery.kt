@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.composegallery.destinations.ImageDestination
+import com.example.composegallery.storage.ExternalStoragePhoto
 import com.example.composegallery.storage.StorageUtils
 import com.google.accompanist.coil.rememberCoilPainter
 import com.ramcosta.composedestinations.annotation.Destination
@@ -31,10 +33,10 @@ fun GalleryGrid(
     context: Context,
     navigator: DestinationsNavigator,
 ) {
-    val imagesList = StorageUtils.getImageUris()
+    val photos = StorageUtils.getPhotos()
     val scaffoldState = rememberScaffoldState()
 
-    if (imagesList.isEmpty()) {
+    if (photos.isEmpty()) {
         Text(text = "No pictures were found on your device.")
     } else {
         Scaffold(
@@ -49,7 +51,7 @@ fun GalleryGrid(
                     modifier = Modifier.padding(paddingValues)
                 ) {
                     ImagesGrid(
-                        photos = imagesList,
+                        photos = photos,
                         navigator = navigator,
                         context = context
                     )
@@ -64,19 +66,19 @@ fun GalleryGrid(
 private
 @Composable
 fun ImagesGrid(
-    photos: SnapshotStateList<Uri>,
+    photos: SnapshotStateList<ExternalStoragePhoto>,
     navigator: DestinationsNavigator,
     context: Context
 ) {
     LazyVerticalGrid(cells = GridCells.Adaptive(minSize = 120.dp)) {
-        items(photos) { photoUri ->
+        items(photos) { photo ->
             Box(
                 modifier = Modifier
                     .clickable {
                         Toast
-                            .makeText(context, photoUri.toString(), Toast.LENGTH_SHORT)
+                            .makeText(context, photo.contentUri.toString(), Toast.LENGTH_SHORT)
                             .show()
-                        /*navigator.navigate(
+                        navigator.navigate(
                             ImageDestination(
                                 Photo(
                                     contentUri = photo.contentUri,
@@ -86,12 +88,12 @@ fun ImagesGrid(
                                     name = photo.name,
                                 )
                             )
-                        )*/
+                        )
                     }
             ) {
                 GlideImage(
                     imageModel = Image(
-                        bitmap = getBitmapFromUri(context, photoUri).asImageBitmap(),
+                        bitmap = getBitmapFromUri(context, photo.contentUri).asImageBitmap(),
                         contentDescription = ""
                     ),
                     loading = {
@@ -111,116 +113,7 @@ fun ImagesGrid(
                     },
                     contentScale = ContentScale.FillWidth
                 )
-
-                /*Image(
-                    painter = rememberCoilPainter(
-                        request = photoUri
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(1.dp)
-                        .clickable {
-                            *//*navController.navigate(
-                                route = Screens.FullImage_ShowFullImage + "/${photos[index]}"
-                            )*//*
-                        }
-                        .fillMaxWidth(),
-                    contentScale = ContentScale.Crop
-                )*/
             }
         }
     }
 }
-
-
-/*
-@Destination()
-@Composable
-fun Gallery(
-    permissionsList: SnapshotStateList<String>,
-    permissionsNeeded: MutableList<String>,
-    context: Context,
-    navigator: DestinationsNavigator
-) {
-    val photos = remember { mutableStateListOf<ExternalStoragePhoto>() }
-
-
-    Scaffold() {
-        Column {
-            */
-/*PermissionButton(
-                permissionsList = permissionsList,
-                permissionsNeeded = permissionsNeeded,
-                context = context,
-                photos = photos,
-            )*//*
-
-
-            RefreshPhotosButton(context = context, photos = photos)
-
-            Text(text = "Permissions granted: ${listToString(permissionsList)}")
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            LazyColumn {
-                items(items = photos) { photo ->
-                    ImageCard(
-                        context = context,
-                        photo = photo,
-                        navigator = navigator
-                    )
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-fun RefreshPhotosButton(
-    context: Context,
-    photos: SnapshotStateList<ExternalStoragePhoto>
-) {
-    val takePhotoToExternal =
-        rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
-            if (it != null) {
-                loadPhotosFromExternalStorageIntoVariable(context, photos)
-            }
-        }
-
-    Button(onClick = {
-        takePhotoToExternal.launch()
-        loadPhotosFromExternalStorageIntoVariable(context, photos)
-    }) {
-        Text(text = "Take Photo and refresh")
-    }
-}
-
-
-@Composable
-fun PermissionButton(
-    permissionsList: SnapshotStateList<String>,
-    permissionsNeeded: MutableList<String>,
-    context: Context,
-    photos: SnapshotStateList<ExternalStoragePhoto>
-) {
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { resultPermissions ->
-        if (resultPermissions[Manifest.permission.READ_EXTERNAL_STORAGE] != null) {
-            addIfNotExists(permissionsList, Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
-        if (resultPermissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] != null) {
-            addIfNotExists(permissionsList, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        }
-    }
-
-    Button(onClick = {
-        permissionLauncher.launch(permissionsNeeded.toTypedArray())
-        loadPhotosFromExternalStorageIntoVariable(context, photos)
-    }) {
-        Text(text = "Get Permissions")
-    }
-}*/
