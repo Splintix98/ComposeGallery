@@ -78,32 +78,6 @@ fun ImageCard(
                     .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
-            /*GlideImage(
-                contentScale = ContentScale.Crop,
-                imageModel = Image(
-                    bitmap = getThumbnailBitmapFromUri(
-                        context,
-                        photo.contentUri
-                    ).asImageBitmap(),
-                    contentDescription = photo.name
-                ),
-                loading = {
-                    ConstraintLayout(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        val indicator = createRef()
-                        CircularProgressIndicator(
-                            modifier = Modifier.constrainAs(indicator) {
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                            }
-                        )
-                    }
-                },
-
-            )*/
         }
     }
 }
