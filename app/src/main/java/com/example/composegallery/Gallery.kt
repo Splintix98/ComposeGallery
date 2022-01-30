@@ -84,31 +84,7 @@ fun ImagesGrid(
                     }
             ) {
                 ImageCard(context = context, photo = photo, navigator = navigator)
-            /*GlideImage(
-                    imageModel = Image(
-                        bitmap = getThumbnailBitmapFromUri(
-                            context,
-                            photo.contentUri
-                        ).asImageBitmap(),
-                        contentDescription = ""
-                    ),
-                    loading = {
-                        ConstraintLayout(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            val indicator = createRef()
-                            CircularProgressIndicator(
-                                modifier = Modifier.constrainAs(indicator) {
-                                    top.linkTo(parent.top)
-                                    bottom.linkTo(parent.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                }
-                            )
-                        }
-                    },
-                    contentScale = ContentScale.FillWidth
-                )*/
+
             }
         }
     }
