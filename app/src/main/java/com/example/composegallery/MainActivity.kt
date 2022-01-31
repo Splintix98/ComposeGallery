@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
         if(neededPermissions.isEmpty()) {
             setContent {
                 // get Photos
-                // fetchImageUris(this)
+                fetchImageUris(this)
                 fetchPhotos(this)
 
                 // Navigate to Gallery
