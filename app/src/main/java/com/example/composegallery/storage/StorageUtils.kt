@@ -31,6 +31,16 @@ class StorageUtils {
         }
 
 
+        fun getPhotoByIndex(index: Int): ExternalStoragePhoto {
+            return photos[index]
+        }
+
+
+        fun getPhotosSize(): Int {
+            return photos.size
+        }
+
+
         fun fetchPhotos(
             context: Context
         ) {
