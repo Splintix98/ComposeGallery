@@ -35,18 +35,20 @@ fun ImageURICard(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Image(
-                painter = rememberImagePainter(
-                    data = getThumbnailBitmapFromUri(context, imageURI),
-                    imageLoader = LocalImageLoader.current
-                ),
-                contentDescription = "",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(1.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )
+            getThumbnailBitmapFromUri(context, imageURI)?.let {
+                Image(
+                    painter = rememberImagePainter(
+                        data = it,
+                        imageLoader = LocalImageLoader.current
+                    ),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(1.dp)
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
     }
 }
@@ -69,18 +71,20 @@ fun ImageCard(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Image(
-                painter = rememberImagePainter(
-                    data = getThumbnailBitmapFromUri(context, photo.contentUri),
-                    imageLoader = LocalImageLoader.current
-                ),
-                contentDescription = "",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(1.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )
+            getThumbnailBitmapFromUri(context, photo.contentUri)?.let {
+                Image(
+                    painter = rememberImagePainter(
+                        data = it,
+                        imageLoader = LocalImageLoader.current
+                    ),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(1.dp)
+                        .fillMaxWidth(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
     }
 }
@@ -89,6 +93,10 @@ fun ImageCard(
 fun getThumbnailBitmapFromUri(
     context: Context,
     uri: Uri
-): Bitmap {
-    return context.contentResolver.loadThumbnail(uri, Size(300, 300), null)
+): Bitmap? {
+    return try {
+        context.contentResolver.loadThumbnail(uri, Size(300, 300), null)
+    } catch (ex: Throwable) {
+        null
+    }
 }
